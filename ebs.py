@@ -25,7 +25,7 @@ instancia = client.run_instances(
                                 Placement={'AvailabilityZone': 'us-east-1a'},
                                 TagSpecifications=[{
                                     'ResourceType': 'instance',
-                                    'Tags': [{'Key': 'Name','Value': 'Mi-Servidor-Python'},]
+                                    'Tags': [{'Key': 'Name','Value': 'ec2-ebs'},]
                                 }],
                             )
 id = instancia['Instances'][0]['InstanceId']
