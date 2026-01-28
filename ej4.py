@@ -121,17 +121,7 @@ def seed_and_upload(bucket_name: str):
 
 def main():
     create_bucket_basic(BUCKET, REGION)
-
-    prefixes = [
-        f"{BASE_PREFIX}/datos/usuario/",
-        f"{BASE_PREFIX}/datos/zona/",
-        f"{BASE_PREFIX}/datos/reporte/",
-        f"{BASE_PREFIX}/datos/comentario/",
-        f"{BASE_PREFIX}/datos/multimedia/",
-        f"{BASE_PREFIX}/multimedia/",
-        f"{BASE_PREFIX}/resultados/",
-    ]
-
+    
     seed_and_upload(BUCKET)
 
     read_csv_from_s3(BUCKET, f"{BASE_PREFIX}/datos/reporte/reporte.csv", max_rows=5)
