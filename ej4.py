@@ -1,4 +1,3 @@
-# Crear un S3 Estándar, crear un cubo y añadir varias carpetas con un objeto que sea un archivo csv con varios datos para trabajar con él a posteriori y obtener le objeto
 import boto3
 from dotenv import load_dotenv
 import os
@@ -21,10 +20,6 @@ REGION = os.getenv("REGION")
 BASE_PREFIX = 'negocio'
 
 def create_bucket_basic(bucket_name: str, region: str):
-    """
-    Crea el bucket si no existe.
-    - En us-east-1 NO se pasa LocationConstraint.
-    """
     try:
         s3.head_bucket(Bucket=bucket_name)
         print(f"Bucket ya existe y es accesible: {bucket_name}")
@@ -57,9 +52,6 @@ def upload_csv(bucket_name: str, key: str, headers: list[str], rows: list[list])
 
 
 def read_csv_from_s3(bucket_name: str, key: str, max_rows: int = 5):
-    """
-    Descarga el CSV y muestra algunas filas (para trabajar luego con ello).
-    """
     obj = s3.get_object(Bucket=bucket_name, Key=key)
     text = obj["Body"].read().decode("utf-8")
 
@@ -104,30 +96,24 @@ def seed_and_upload(bucket_name: str):
         [2, 2, 3, "Pasa mucha gente por ahí, peligroso.", now],
     ]
 
-    # Multimedia (FK id_reporte) -> normalmente guardarías aquí REFERENCIAS a objetos multimedia en S3
+    # Multimedia (FK id_reporte)
     multimedia_h = ["id", "id_reporte", "tipoArchivo", "rutaArchivo"]
     multimedia_r = [
         [1, 1, "image/jpeg", f"s3://{bucket_name}/{BASE_PREFIX}/multimedia/reporte=1/foto_1.jpg"],
         [2, 3, "video/mp4", f"s3://{bucket_name}/{BASE_PREFIX}/multimedia/reporte=3/video_1.mp4"],
     ]
 
-    # Subimos a datos
     upload_csv(bucket_name, f"{BASE_PREFIX}/datos/usuario/usuario.csv", usuario_h, usuario_r)
     upload_csv(bucket_name, f"{BASE_PREFIX}/datos/zona/zona.csv", zona_h, zona_r)
     upload_csv(bucket_name, f"{BASE_PREFIX}/datos/reporte/reporte.csv", reporte_h, reporte_r)
     upload_csv(bucket_name, f"{BASE_PREFIX}/datos/comentario/comentario.csv", comentario_h, comentario_r)
     upload_csv(bucket_name, f"{BASE_PREFIX}/datos/multimedia/multimedia.csv", multimedia_h, multimedia_r)
 
-
 def main():
     create_bucket_basic(BUCKET, REGION)
-    
     seed_and_upload(BUCKET)
-
     read_csv_from_s3(BUCKET, f"{BASE_PREFIX}/datos/reporte/reporte.csv", max_rows=5)
-
     print("Script básico finalizado.")
-
 
 if __name__ == "__main__":
     main()
